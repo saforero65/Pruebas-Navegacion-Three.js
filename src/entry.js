@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { BoxLineGeometry } from "./jsm/geometries/BoxLineGeometry.js";
 import { VRButton } from "./jsm/webxr/VRButton.js";
 import { XRControllerModelFactory } from "./jsm/webxr/XRControllerModelFactory.js";
+import SeedScene from "./objects/Scene.js";
 
 const clock = new THREE.Clock();
 
@@ -28,16 +29,23 @@ function init() {
     50,
     window.innerWidth / window.innerHeight,
     0.1,
-    10
+    100
   );
   camera.position.set(0, 1.6, 3);
   scene.add(camera);
 
   room = new THREE.LineSegments(
-    new BoxLineGeometry(6, 6, 6, 10, 10, 10).translate(0, 3, 0),
+    new BoxLineGeometry(6, 6, 6, 15, 15, 15).translate(0, 1, 0),
     new THREE.LineBasicMaterial({ color: 0x808080 })
   );
   scene.add(room);
+
+  const seedScene = new SeedScene();
+
+  seedScene.rotation.y = Math.PI;
+  seedScene.translateZ(4);
+  // scene
+  scene.add(seedScene);
 
   scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
 
@@ -47,7 +55,7 @@ function init() {
 
   const geometry = new THREE.BoxGeometry(0.15, 0.15, 0.15);
 
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 50; i++) {
     const object = new THREE.Mesh(
       geometry,
       new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff })

@@ -1,67 +1,182 @@
-# Three Seed
+# npm-install-global [![NPM version](https://img.shields.io/npm/v/npm-install-global.svg?style=flat)](https://www.npmjs.com/package/npm-install-global) [![NPM monthly downloads](https://img.shields.io/npm/dm/npm-install-global.svg?style=flat)](https://npmjs.org/package/npm-install-global) [![NPM total downloads](https://img.shields.io/npm/dt/npm-install-global.svg?style=flat)](https://npmjs.org/package/npm-install-global) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/npm-install-global.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/npm-install-global)
 
-Three.js starter project boilerplate bundled with Webpack.
-
-This project is designed to help you get started on your next three.js project. It sets up a simple scene, camera and renderer to view two imported GLTF assets.
-
-[Online Demo](http://edwinwebb.github.io/three-seed/)
+> Simple API for globally installing or uninstalling one or more NPM packages.
 
 ## Install
-Before you begin, make sure you are comfortable with terminal commands and have [Node and NPM installed](https://www.npmjs.com/get-npm). Then either install via a download or with Git.
 
-### Install via Download
-First download the [zip of the project](https://github.com/edwinwebb/three-seed/archive/master.zip) and extract it. Then in terminal at that folder type `npm install` to set things up. To get going run: `npm start`.
+Install with [npm](https://www.npmjs.com/):
 
-### Install with Git
-In terminal clone the project into a directory of your choice then delete the git folder to start fresh.
-
-```bash
-git clone --depth=1 https://github.com/edwinwebb/three-seed.git my-project
-cd my-project
-rm -rf .git
-npm install
+```sh
+$ npm install --save npm-install-global
 ```
 
-## Running the development server
-To see the changes you make to the starter project go to the project folder in terminal and type...
+Install with [yarn](https://yarnpkg.com):
 
-```bash
-npm start
+```sh
+$ yarn add npm-install-global
 ```
 
-This command will bundle the project code and start a development server at [http://localhost:8080/](http://localhost:8080/). Visit this in your web browser; you should see a rotating island and flower.
+## Usage
 
-## Editing the code
-The first file you should open is `./objects/Scene.js`. In it you will find the three objects comprising the ThreeJS scene represented in your browser. The flower, the island, and the lights illuminating them are each represented as a javascript file in the `./object/` folder. Open these, edit them and see your changes in the browser. If something goes wrong a message will displayed in the debug console of the browser.
+```js
+var npm = require('npm-install-global');
 
-## Importing local files
-Local files, such as images and 3D models, are imported into the application as URLs then loaded asynchronously with three.js. Most common files that three.js uses are supported. For more information about this system see the [webpack site](https://webpack.js.org/).
+// easily install packages
+npm.install('generate', function(err) {
+  if (err) return console.log(err);
+});
 
-## Importing modules from the web
-If you want to add additional functionality to your project, you can search and install them from the [NPM repository](https://www.npmjs.com/). Some modules you might want to consider are...
-* [three-orbit-controls](https://www.npmjs.com/package/three-orbit-controls)
-* [popmotion](https://www.npmjs.com/package/popmotion)
-* [Cannon.js Physics](https://www.npmjs.com/package/cannon).
+// or remove outdated packages
+npm.uninstall('yeoman', function(err) {
+  if (err) return console.log(err);
+});
 
-Additions like these are best managed in the projects entry file: `./src/entry.js`. In it are the Scene, Camera, Renderer, the window event listeners and the animation loop.
+// or install only packages that don't already exist
+npm.maybeInstall(['foo', 'bar'], function(err) {
+  if (err) return console.log(err);
+});
+```
 
-## Using the Three.js Examples
-When using this project you might bump into a few issues around using 
-the examples from three.js docs. Most of the common issues have been 
-solved with including NPM packages. However, for more complex examples 
-with custom script includes you might find yourself having to refactor 
-them. See [Issue 15](https://github.com/edwinwebb/three-seed/issues/15) 
-for an example.
+## API
 
-## About the models
-Both the models are loaded by the GLTFLoader and were sourced from the Google Poly project.
+### [npm](index.js#L29)
 
-"[Floating Island](https://poly.google.com/view/eEz9hdknXOi)" by [sirkitree](https://poly.google.com/user/3dVB0GT8oMI) is licensed under CC BY 2.0
+Execute `npm --global` with the given command and one or more package names. This is the base for [install](#install) and [uninstall](#uninstall).
 
-"[Flower](https://poly.google.com/view/9znAp0dJiS8)" by [Poly By Google](https://poly.google.com/user/4aEd8rQgKu2) is licensed under CC BY 2.0
+**Params**
 
-## Building the project for the web
-Once you are happy with your project you'll be sure to want to show it off. Running `npm run build` in terminal will bundle your project into the folder `./build/`. You can upload this directory to a web server. For more complex results read [this guide](https://webpack.js.org/guides/production/).
+* `names` **{String|Array}**: One or more package names.
+* `cb` **{Function}**: Callback
 
-## License
-[MIT](https://github.com/edwinwebb/three-seed/blob/master/LICENSE)
+**Example**
+
+```js
+npm('install', 'verb', function(err) {
+  if (err) throw err;
+});
+```
+
+### [.global](index.js#L65)
+
+Execute `npm [cmd] --global` with one or more package `names`.
+
+**Params**
+
+* `cmd` **{String}**: The command to run
+* `names` **{String|Array}**: One or more package names.
+* `cb` **{Function}**: Callback
+
+**Example**
+
+```js
+npm.global('install', 'generate', function(err) {
+  if (err) throw err;
+});
+```
+
+### [.install](index.js#L82)
+
+Execute `npm install --global` with one or more package `names`.
+
+**Params**
+
+* `names` **{String|Array}**: One or more package names.
+* `cb` **{Function}**: Callback
+
+**Example**
+
+```js
+npm.install('generate', function(err) {
+  if (err) throw err;
+});
+```
+
+### [.maybeInstall](index.js#L99)
+
+Install the given packages if they are not already installed.
+
+**Params**
+
+* `names` **{String|Array}**: One or more package names.
+* `cb` **{Function}**: Callback
+
+**Example**
+
+```js
+npm.maybeInstall(['foo', 'bar', 'baz'], function(err) {
+  if (err) throw err;
+});
+```
+
+### [.uninstall](index.js#L131)
+
+Execute `npm uninstall --global` with one or more package `names`.
+
+**Params**
+
+* `names` **{String|Array}**: One or more package names.
+* `cb` **{Function}**: Callback
+
+**Example**
+
+```js
+npm.uninstall('yeoman', function(err) {
+  if (err) throw err;
+});
+```
+
+## History
+
+**v1.0.0**
+
+* adds [.global](#global) method, now used by the other methods
+
+**v0.1.1**
+
+* adds [.maybeInstall](#maybeInstall) method
+
+## About
+
+### Related projects
+
+* [base-npm](https://www.npmjs.com/package/base-npm): Base plugin that adds methods for programmatically running npm commands. | [homepage](https://github.com/node-base/base-npm "Base plugin that adds methods for programmatically running npm commands.")
+* [base](https://www.npmjs.com/package/base): Framework for rapidly creating high quality node.js applications, using plugins like building blocks | [homepage](https://github.com/node-base/base "Framework for rapidly creating high quality node.js applications, using plugins like building blocks")
+* [generate](https://www.npmjs.com/package/generate): Command line tool and developer framework for scaffolding out new GitHub projects. Generate offers the… [more](https://github.com/generate/generate) | [homepage](https://github.com/generate/generate "Command line tool and developer framework for scaffolding out new GitHub projects. Generate offers the robustness and configurability of Yeoman, the expressiveness and simplicity of Slush, and more powerful flow control and composability than either.")
+
+### Contributing
+
+Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
+
+### Building docs
+
+_(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
+
+To generate the readme, run the following command:
+
+```sh
+$ npm install -g verbose/verb#dev verb-generate-readme && verb
+```
+
+### Running tests
+
+Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
+
+```sh
+$ npm install && npm test
+```
+
+### Author
+
+**Jon Schlinkert**
+
+* [github/jonschlinkert](https://github.com/jonschlinkert)
+* [twitter/jonschlinkert](https://twitter.com/jonschlinkert)
+
+### License
+
+Copyright © 2017, [Jon Schlinkert](https://github.com/jonschlinkert).
+Released under the [MIT License](LICENSE).
+
+***
+
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.6.0, on April 29, 2017._
