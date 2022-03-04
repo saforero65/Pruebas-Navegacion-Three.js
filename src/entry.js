@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { OrbitControls } from "./jsm/controls/OrbitControls.js";
 import { BoxLineGeometry } from "./jsm/geometries/BoxLineGeometry.js";
 import { VRButton } from "./jsm/webxr/VRButton.js";
 import { XRControllerModelFactory } from "./jsm/webxr/XRControllerModelFactory.js";
@@ -6,7 +7,7 @@ import SeedScene from "./objects/Scene.js";
 
 const clock = new THREE.Clock();
 
-let container;
+let container, controls;
 let camera, scene, raycaster, renderer;
 
 let room;
@@ -26,26 +27,42 @@ function init() {
   scene.background = new THREE.Color(0x505050);
 
   camera = new THREE.PerspectiveCamera(
-    50,
+    45,
     window.innerWidth / window.innerHeight,
-    0.1,
-    100
+    1,
+    10000
   );
-  camera.position.set(0, 1.6, 3);
+  camera.position.set(5, 10, 3);
   scene.add(camera);
 
   room = new THREE.LineSegments(
     new BoxLineGeometry(6, 6, 6, 15, 15, 15).translate(0, 1, 0),
     new THREE.LineBasicMaterial({ color: 0x808080 })
   );
-  scene.add(room);
+  // scene.add(room);
 
   const seedScene = new SeedScene();
 
   seedScene.rotation.y = Math.PI;
-  seedScene.translateZ(4);
+  seedScene.translateZ(14);
   // scene
   scene.add(seedScene);
+
+  const geometry2 = new THREE.BoxGeometry(1, 1, 1);
+  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  const cube = new THREE.Mesh(geometry2, material);
+  scene.add(cube);
+
+  cube.position.set(10, 0, 15);
+
+  const cube2 = new THREE.Mesh(geometry2, material);
+
+  scene.add(cube2);
+  cube2.position.set(-14, 0, 0);
+
+  console.log(seedScene.position);
+  console.log(cube.position);
+  console.log(cube2.position);
 
   scene.add(new THREE.HemisphereLight(0x606060, 0x404040));
 
@@ -78,7 +95,7 @@ function init() {
     object.userData.velocity.y = Math.random() * 0.01 - 0.005;
     object.userData.velocity.z = Math.random() * 0.01 - 0.005;
 
-    room.add(object);
+    // room.add(object);
   }
 
   raycaster = new THREE.Raycaster();
@@ -89,6 +106,7 @@ function init() {
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.xr.enabled = true;
   container.appendChild(renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
 
   //
 
@@ -169,6 +187,8 @@ function onWindowResize() {
 
 function animate() {
   renderer.setAnimationLoop(render);
+  controls.update();
+  console.log(controls);
 }
 
 function render() {
